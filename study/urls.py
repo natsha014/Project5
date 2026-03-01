@@ -8,7 +8,7 @@ from study.views import CourseViewSet, LessonListAPIView, LessonCreateAPIView, L
 app_name = StudyConfig.name
 
 router = SimpleRouter()
-router.register("", CourseViewSet)
+router.register('', CourseViewSet)
 
 urlpatterns = [
     path('lessons/', LessonListAPIView.as_view(), name='lesson_list'),
