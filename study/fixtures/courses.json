@@ -1,0 +1,18 @@
+[
+  {
+    "model": "study.course",
+    "pk": 1,
+    "fields": {
+      "name": "Python developer",
+      "description": "Обучение языку Python"
+    }
+  },
+  {
+    "model": "study.course",
+    "pk": 2,
+    "fields": {
+      "name": "Graphic designer",
+      "description": "Обучение графическому дизайну"
+    }
+  }
+]

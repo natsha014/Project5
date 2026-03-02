@@ -1,0 +1,22 @@
+[
+  {
+    "model": "study.lesson",
+    "pk": 1,
+    "fields": {
+      "name": "Основы синтаксиса",
+      "description": "Первый урок по Python",
+      "course": 1,
+      "video_link": null
+    }
+  },
+  {
+    "model": "study.lesson",
+    "pk": 2,
+    "fields": {
+      "name": "Введение в дизайн",
+      "description": "Первый урок по графическому дизайну",
+      "course": 2,
+      "video_link": null
+    }
+  }
+]
