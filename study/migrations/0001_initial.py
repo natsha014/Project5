@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -33,7 +32,8 @@ class Migration(migrations.Migration):
                 ('preview', models.ImageField(blank=True, null=True, upload_to='previews/', verbose_name='Превью')),
                 ('description', models.TextField(verbose_name='Описание')),
                 ('video_link', models.URLField(blank=True, max_length=500, null=True, verbose_name='Ссылка на видео')),
-                ('course', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='study', to='study.course')),
+                ('course', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='study',
+                                             to='study.course')),
             ],
             options={
                 'verbose_name': 'Курс',
