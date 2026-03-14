@@ -43,6 +43,23 @@ class StudyTestCase(APITestCase):
         response = self.client.delete(reverse("study:lesson_delete", args=[self.lesson.pk]))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    def test_lesson_list(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(reverse("study:lesson_list"))
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('results', response.data)
+        self.assertEqual(len(response.data['results']), 1)
+
+    def test_lesson_update(self):
+        self.client.force_authenticate(user=self.user)
+        data = {"name": "Updated Name"}
+        url = reverse("study:lesson_update", args=[self.lesson.pk])
+
+        response = self.client.patch(url, data=data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get("name"), "Updated Name")
+
     def test_subscription_toggle(self):
         """Тест работы подписки (добавление/удаление)"""
         self.client.force_authenticate(user=self.user)
