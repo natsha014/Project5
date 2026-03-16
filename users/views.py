@@ -6,6 +6,7 @@ from rest_framework.permissions import AllowAny
 from study.permissions import IsOwner
 from users.models import Payment, User
 from users.serializers import PaymentSerializer, UserSerializer, UserPublicSerializer
+from users.services import create_stripe_price, create_stripe_session
 
 
 class PaymentListAPIView(generics.ListAPIView):
@@ -17,6 +18,22 @@ class PaymentListAPIView(generics.ListAPIView):
     filterset_fields = ('paid_course', 'paid_lesson', 'payment_method',)
 
     ordering_fields = ('payment_date',)
+
+
+class PaymentCreateAPIView(generics.CreateAPIView):
+    serializer_class = PaymentSerializer
+    queryset = Payment.objects.all()
+
+    def perform_create(self, serializer):
+        payment = serializer.save(user=self.request.user)
+        try:
+            price = create_stripe_price(payment.amount)
+            session_url, session_id = create_stripe_session(price.id)
+            payment.session_id = session_id
+            payment.link = session_url
+            payment.save()
+        except Exception as e:
+            print(f"Ошибка Stripe: {e}")
 
 
 class UserViewSet(viewsets.ModelViewSet):
