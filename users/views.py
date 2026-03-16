@@ -26,12 +26,14 @@ class PaymentCreateAPIView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         payment = serializer.save(user=self.request.user)
-        price = create_stripe_price(payment.amount)
-        session_url, session_id = create_stripe_session(price.id)
-
-        payment.session_id = session_id
-        payment.link = session_url
-        payment.save()
+        try:
+            price = create_stripe_price(payment.amount)
+            session_url, session_id = create_stripe_session(price.id)
+            payment.session_id = session_id
+            payment.link = session_url
+            payment.save()
+        except Exception as e:
+            print(f"Ошибка Stripe: {e}")
 
 
 class UserViewSet(viewsets.ModelViewSet):
