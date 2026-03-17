@@ -8,6 +8,11 @@ class Course(models.Model):
     description = models.TextField(verbose_name='Описание')
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                               null=True, blank=True, verbose_name='Владелец')
+    last_update_email_sent = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Дата последней рассылки"
+    )
 
     class Meta:
         verbose_name = 'Курс'
