@@ -8,6 +8,7 @@ from study.models import Course, Lesson, Subscription
 from study.paginators import CustomPagination
 from study.serializers import CourseSerializer, LessonSerializer
 from study.permissions import IsModerator, IsOwner
+from study.tasks import send_course_update_email
 
 
 class CourseViewSet(ModelViewSet):
@@ -30,6 +31,10 @@ class CourseViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+    def perform_update(self, serializer):
+        course = serializer.save()
+        send_course_update_email.delay(course.id)
 
 
 class LessonCreateAPIView(CreateAPIView):
@@ -66,6 +71,10 @@ class LessonUpdateAPIView(UpdateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = [IsOwner | IsModerator]
+
+    def perform_update(self, serializer):
+        lesson = serializer.save()
+        send_course_update_email.delay(lesson.course.id)
 
 
 class LessonDestroyAPIView(DestroyAPIView):
