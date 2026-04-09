@@ -49,6 +49,49 @@ Celery)**
 
    Celery: `celery --app=config worker --loglevel=info`
 
+## 🐳 Запуск проекта через Docker
+
+Проект полностью контейнеризирован. В связке работают: **Django (web)**, **PostgreSQL (db)**, **Redis** и **Celery**.
+
+### 1. Подготовка окружения
+
+Создайте в корневой директории файл `.env` и заполните его вашими данными.
+**Важно:** для корректной работы внутри Docker используйте следующие параметры:
+
+- `HOST=db` (имя сервиса базы данных)
+- `CELERY_BROKER_URL=redis://redis:6379`
+- укажите полные данные `POSTGRES_USER` и `POSTGRES_PASSWORD`
+
+### 2. Запуск проекта
+
+Выполните команду для автоматической сборки образов и запуска всех контейнеров:
+
+```bash
+docker-compose up --build
+```
+
+(если вы используете Docker Desktop или современный плагин, команда может быть:
+
+```
+docker compose up --build
+```
+
+)
+
+### 3. Проверка работоспособности сервисов
+
+После запуска вы можете проверить каждый компонент:
+Django (Web): Перейдите по адресу http://localhost:8000. Вы должны увидеть главную страницу или экран приветствия
+Django.
+
+PostgreSQL (DB): Проверьте логи контейнера командой docker-compose logs db. Если база готова, вы увидите: "database
+system is ready to accept connections".
+
+Redis: В логах контейнера redis должно быть сообщение: "Ready to accept connections tcp".
+
+Celery & Celery-Beat: Проверьте логи командой docker-compose logs celery. Вы должны увидеть логотип Celery и статус
+connected to redis://redis:6379
+
 ## Тестирование
 
 ```
