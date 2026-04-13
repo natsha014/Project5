@@ -18,6 +18,7 @@ drf-yasg = "^1.21.15"
 celery = "^5.6.2"
 redis = "^7.3.0"
 django-celery-beat = "^2.9.0"
+stripe = "^15.0.1"
 
 [tool.poetry.group.lint.dependencies]
 flake8 = "^7.3.0"

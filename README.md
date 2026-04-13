@@ -23,38 +23,74 @@ Celery)**
 
 ## Установка и запуск
 
-1. **Клонируйте репозиторий:**
+**Клонируйте репозиторий:**
    ```bash
    git clone https://github.com/natsha014/Project5
+   ```
 
-2. **Настройте переменные окружения:**
+## 🐳 Запуск проекта через Docker
+
+Проект полностью контейнеризирован. Вам не нужно устанавливать зависимости локально. 
+В связке работают: **Django (web)**, **PostgreSQL (db)**, **Redis** и **Celery**.
+
+### 1. **Настройте переменные окружения:**
 
    Создайте файл `.env` в корне проекта и заполните его по образцу `.env.sample`
 
+### 2. Сборка и запуск
+Запустите систему одной командой (убедитесь, что Docker запущен):
 
-3. **Установите зависимости (через Poetry):**
-    ```bash
-    poetry install
-    poetry shell
+```bash
+docker-compose up --build
+```
 
-4. **Примените миграции:**
-    ```bash
-    python manage.py migrate
-
-5. **Запустите проект:**
-
-   Сервер: `python manage.py runserver`
-
-   Redis: `redis-server`
-
-   Celery: `celery --app=config worker --loglevel=info`
-
-## Тестирование
+(если вы используете Docker Desktop или современный плагин, команда может быть:
 
 ```
-    python manage.py test
-
+docker compose up --build
 ```
+
+)
+
+### 3. 🔍 Проверка работоспособности сервисов
+Для проверки используйте команды терминала и логи контейнеров.
+
+🟢 Web (Django API)
+Команда: docker-compose ps web
+Ожидаемый результат: Статус Up.
+В браузере: Перейдите на http://localhost:8000. Должна открыться главная страница или документация API.
+
+🔵 DB (PostgreSQL)
+Команда: docker-compose logs db
+Ожидаемый результат: В логах должна быть строка: 
+`database system is ready to accept connections`
+
+🔴 Redis (Broker)
+Команда: `docker-compose logs redis`
+Ожидаемый результат: В логах должно быть сообщение: 
+`Ready to accept connections tcp`
+
+🟣 Celery (Worker)
+Команда: `docker-compose logs celery`
+Ожидаемый результат: В логах должен отобразиться список зарегистрированных задач (tasks)
+и `статус connected to redis://redis:6379`
+
+⏱ Celery-Beat (Scheduler)
+Команда: `docker-compose logs celery-beat`
+Ожидаемый результат: В логах должны появляться сообщения о планировании периодических задач (например, `beat: Writing entries...`)
+
+
+### 4. 🛠 Полезные команды
+
+Остановка всех контейнеров:
+
+`docker-compose down -v`
+
+ Миграции выполняются автоматически при запуске контейнера. 
+ Если вам необходимо запустить их вручную, используйте команду:
+
+`docker-compose exec web python manage.py migrate`
+
 
 ## Документация API
 
@@ -62,9 +98,3 @@ Celery)**
 
 - `Swagger: 127.0.0.1`
 - `ReDoc: 127.0.0.1`
-
-
-    
-
-
-
