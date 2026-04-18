@@ -88,5 +88,5 @@ jobs:
             cd ${{ secrets.DEPLOY_DIR }}
             docker compose pull
             docker compose up -d
-            docker compose exec -T web python manage.py collectstatic --noinput
-            docker compose exec -T web python manage.py migrate
+            docker compose exec -T web poetry run python manage.py collectstatic --noinput
+            docker compose exec -T web poetry run python manage.py migrate
