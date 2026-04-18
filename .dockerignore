@@ -12,3 +12,5 @@ db.sqlite3
 .DS_Store
 Dockerfile
 docker-compose.yml
+.gitignore
+test_db.sqlite3
