@@ -34,7 +34,7 @@ services:
         condition: service_started
 
   nginx:
-    build: ./nginx
+    image: ${{ secrets.DOCKER_HUB_USERNAME }}/myapp-nginx:latest
     ports:
       - "80:80"
     volumes:
