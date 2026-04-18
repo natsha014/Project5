@@ -7,10 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: '3.13'
 
@@ -29,9 +29,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: lint
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: '3.13'
 
@@ -52,7 +52,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: tests
     steps:
-      - uses: actions/checkout@v3
+      - name: Check out code
+        uses: actions/checkout@v4
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -60,19 +61,13 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Build and Push Django
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/myapp-web:latest
-
-      - name: Build and Push Nginx
-        uses: docker/build-push-action@v4
-        with:
-          context: ./nginx
-          push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/myapp-nginx:latest
+      - name: Build and Push
+        run: |
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/myapp-web:latest .
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/myapp-web:latest
+          
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/myapp-nginx:latest ./nginx
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/myapp-nginx:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -86,6 +81,8 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd ${{ secrets.DEPLOY_DIR }}
+            git fetch origin
+            git reset --hard origin/feature/ci_cd
             docker compose pull
             docker compose up -d
             docker compose exec -T web poetry run python manage.py collectstatic --noinput
