@@ -41,7 +41,7 @@ Celery)**
 Запустите систему одной командой (убедитесь, что Docker запущен):
 
 ```bash
-docker-compose up --build
+   docker compose up --build
 ```
 
 (если вы используете Docker Desktop или современный плагин, команда может быть:
@@ -56,27 +56,27 @@ docker compose up --build
 Для проверки используйте команды терминала и логи контейнеров.
 
 🟢 Web (Django API)
-Команда: docker-compose ps web
+Команда: docker compose ps web
 Ожидаемый результат: Статус Up.
 В браузере: Перейдите на http://localhost:8000. Должна открыться главная страница или документация API.
 
 🔵 DB (PostgreSQL)
-Команда: docker-compose logs db
+Команда: docker compose logs db
 Ожидаемый результат: В логах должна быть строка: 
 `database system is ready to accept connections`
 
 🔴 Redis (Broker)
-Команда: `docker-compose logs redis`
+Команда: `docker compose logs redis`
 Ожидаемый результат: В логах должно быть сообщение: 
 `Ready to accept connections tcp`
 
 🟣 Celery (Worker)
-Команда: `docker-compose logs celery`
+Команда: `docker compose logs celery`
 Ожидаемый результат: В логах должен отобразиться список зарегистрированных задач (tasks)
 и `статус connected to redis://redis:6379`
 
 ⏱ Celery-Beat (Scheduler)
-Команда: `docker-compose logs celery-beat`
+Команда: `docker compose logs celery-beat`
 Ожидаемый результат: В логах должны появляться сообщения о планировании периодических задач (например, `beat: Writing entries...`)
 
 
@@ -84,17 +84,46 @@ docker compose up --build
 
 Остановка всех контейнеров:
 
-`docker-compose down -v`
+`docker compose down -v`
 
  Миграции выполняются автоматически при запуске контейнера. 
  Если вам необходимо запустить их вручную, используйте команду:
 
-`docker-compose exec web python manage.py migrate`
+`docker compose exec web python manage.py migrate`
+
+
+## Деплой проекта
+
+Проект автоматически деплоится на удаленный сервер через GitHub Actions.
+
+### Настройка сервера:
+1. Установите Docker и Docker Compose:
+
+`sudo apt install docker.io docker-compose-v2`
+2. Настройте права доступа (выполните на сервере):
+   ```bash
+   sudo usermod -aG docker $USER
+   sudo chmod 666 /var/run/docker.sock
+   ```
+   
+3. Создайте в папке проекта файл `.env` с необходимыми переменными окружения.
+
+### Настройка GitHub:
+Добавьте в Settings -> Secrets -> Actions следующие переменные:
+- `DOCKER_HUB_USERNAME` / `DOCKER_HUB_ACCESS_TOKEN`
+- `SERVER_IP`, `SSH_USER`, `SSH_KEY`
+- `DEPLOY_DIR` (полный путь к папке проекта на сервере)
+
+### Запуск:
+Просто сделайте `git push`. 
+
+Процесс деплоя можно отследить во вкладке **Actions**.
+
 
 
 ## Документация API
 
 После запуска сервера документация доступна по адресам:
 
-- `Swagger: 127.0.0.1`
-- `ReDoc: 127.0.0.1`
+- Swagger: `http://<ваш_IP>/swagger/`
+- ReDoc: `http://<ваш_IP>/redoc/`
